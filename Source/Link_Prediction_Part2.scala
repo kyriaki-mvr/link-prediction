@@ -58,7 +58,7 @@ object Link_Prediction_Part2 {
     return sameAuthors
   }
 
-  //In this def function we get a dataframe and we use Tf-Idf at a specific column of our data.we get tokens and then we rescale
+  // in this def function we get a dataframe and we use Tf-Idf at a specific column of our data.we get tokens and then we rescale
   def Tf_Idf(x: DataFrame, column: String, columnOut: String, numFeatures: Int): DataFrame = {
     val tokenzr = new Tokenizer().setInputCol(column).setOutputCol("words")
     val wData = tokenzr.transform(x.na.fill(Map(column -> "")))
@@ -70,7 +70,7 @@ object Link_Prediction_Part2 {
     val rescaledData = idfmodel.transform(featData)
     return rescaledData.drop("words").drop("rawFeatures").drop(column)
   }
-  //In this def function we get a dataframe and we use Tf-Idf at a specific column of our data.we get tokens we remove stopwords and then we rescale
+  // in this def function we get a dataframe and we use Tf-Idf at a specific column of our data.we get tokens we remove stopwords and then we rescale
   def Tf_Idf2(x: DataFrame, column: String, columnOut: String, numFeatures: Int): DataFrame = {
     val tokenzr = new Tokenizer().setInputCol(column).setOutputCol("words")
     val wData = tokenzr.transform(x.na.fill(Map(column -> "")))
@@ -86,7 +86,7 @@ object Link_Prediction_Part2 {
     return rescaledData.drop("words").drop("words1").drop("rawFeatures").drop(column)
   }
 
-  //in main function we set the spark context, we load the node information-training and we find linked papers and F1 score
+  // in main function we set the spark context, we load the node information-training and we find linked papers and F1 score
   def main(args: Array[String]): Unit = {
     Logger.getLogger("org").setLevel(Level.OFF)
     Logger.getLogger("akka").setLevel(Level.OFF)
@@ -100,8 +100,8 @@ object Link_Prediction_Part2 {
       .getOrCreate()
 
     import sparkSession.implicits._
-// read the data
-    val dfHeaderl = sparkSession.read.format("csv").option("header", "false").load("C:\\Users\\dell\\Desktop\\node_information.csv")
+    // read the data
+    val dfHeaderl = sparkSession.read.format("csv").option("header", "false").load("samples\\node_information.csv")
     val dfNodeInform = dfHeaderl.toDF("Id", "Year1", "Title", "Authors", "Journal", "Abstract").withColumn("Year",$"Year1".cast(IntegerType))
     val dfNodeInfoProst=Tf_Idf(dfNodeInform,"Title","fTitle",1000).drop("Title")
     val dfNodeInfoP=Tf_Idf2(dfNodeInfoProst,"Abstract","fAbstract",10).drop("Abstract")
@@ -113,20 +113,19 @@ object Link_Prediction_Part2 {
       setInputCols(Array("Year")).
       setOutputCol("featuresTmp")
     val assembledDf = assembler1.transform(hash_Df)
-    //clustering, seed<10 in our case?
+    // clustering, seed<10 in our case?
     val kmeans = new KMeans().setK(3).setSeed(1L).setFeaturesCol("featuresTmp")
     val cluster = kmeans.fit(assembledDf)
 
-    // Make predictions
+    // make predictions
     val predict = cluster.transform(assembledDf)
-    //predictions.show()
 
     /*
-    // Evaluate clustering by computing Silhouette score
+    // evaluate clustering by computing Silhouette score
     val evaluator = new ClusteringEvaluator().setFeaturesCol("featuresTmp")
     val silhouette = evaluator.evaluate(predict)
     println(s"Silhouette = $silhouette " )
-*/
+    */
     val minh = new MinHashLSH()
       .setNumHashTables(45)
       .setInputCol("hashVector")
@@ -156,7 +155,7 @@ object Link_Prediction_Part2 {
 
     val Right1=c.filter($"label"===1).count()
     println("Evaluation start now ")
-    val groundTruth = sparkSession.read.format("csv").option("header", "false").load("C:\\Users\\dell\\Desktop\\Cit-HepTh.txt").toDF("Id").withColumn("_tmp", split($"Id", "\t")).select(
+    val groundTruth = sparkSession.read.format("csv").option("header", "false").load("samples\\Cit-HepTh.txt").toDF("Id").withColumn("_tmp", split($"Id", "\t")).select(
       $"_tmp".getItem(0).as("Id1"),
       $"_tmp".getItem(1).as("Id2")).drop("_tmp")
     val alledges=groundTruth.count()
