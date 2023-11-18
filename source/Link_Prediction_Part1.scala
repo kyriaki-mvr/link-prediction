@@ -101,7 +101,7 @@ object Link_Prediction_Part1 {
     // load training set
     val df1_2 = sparkSession.read.format("csv").option("header", "false").load("samples\\training_set.txt").toDF("info")
     // load testing set
-    val df1_3 = sparkSession.read.format("csv").option("header", "false").load("samples\\testing_set_final.txt").toDF("info")
+    val df1_3 = sparkSession.read.format("csv").option("header", "false").load("samples\\testing_set.txt").toDF("info")
     // val Array(dfNoStop, dfNoStop1)=Array(dfHive, dfHive1).map(RemoveStopwords)
 
     def ProcessDataf(NodeInfo: DataFrame, NodeCombination: DataFrame): DataFrame = {

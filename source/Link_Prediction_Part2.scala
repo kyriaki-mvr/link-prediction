@@ -119,13 +119,6 @@ object Link_Prediction_Part2 {
 
     // make predictions
     val predict = cluster.transform(assembledDf)
-
-    /*
-    // evaluate clustering by computing Silhouette score
-    val evaluator = new ClusteringEvaluator().setFeaturesCol("featuresTmp")
-    val silhouette = evaluator.evaluate(predict)
-    println(s"Silhouette = $silhouette " )
-    */
     val minh = new MinHashLSH()
       .setNumHashTables(45)
       .setInputCol("hashVector")
